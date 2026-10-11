@@ -167,14 +167,16 @@ app.use((req, res, next) => {
 });
 
 // 3. Serve ONLY public directory, strictly ignoring dotfiles
+
 app.use(
-  express.static(path.join(__dirname, 'public'), {
+  express.static(__dirname, {
     dotfiles: 'ignore',
     index: 'index.html',
     etag: true,
     maxAge: '1d'
   })
 );
+
 
 // 4. Parse JSON bodies up to 12MB with strict JSON error handling
 app.use(express.json({ limit: '12mb', strict: true }));
