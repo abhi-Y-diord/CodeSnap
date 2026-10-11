@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CodeSnap - Screenshot to Clean Code</title>
+  <meta name="description" content="Turn screenshots of code into clean, copyable text or intelligently complete truncated snippets using AI.">
+  <!-- Theme initializer script to eliminate flash of wrong theme -->
+  <script src="theme-init.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Header -->
+    <header class="app-header anim-entrance-header">
+      <div class="wordmark-container">
+        <h1 class="brand-title"><span class="brand-code">Code</span><span class="brand-snap">Snap</span></h1>
+        <p class="brand-tagline">Screenshot to clean code in seconds</p>
+      </div>
+
+      <div class="header-controls">
+        <div id="accessCodeWrapper" class="access-code-wrapper hidden">
+          <label for="accessCodeInput" class="sr-only">Access Code</label>
+          <div class="input-with-icon">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input type="password" id="accessCodeInput" placeholder="Access code" autocomplete="current-password">
+          </div>
+        </div>
+
+        <!-- Theme Toggle Button -->
+        <button type="button" id="themeToggleBtn" class="btn-theme-toggle" aria-label="Toggle dark theme" title="Toggle theme">
+          <svg id="themeIconSun" class="theme-icon-sun hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <!-- Input Column -->
+      <section class="card input-section anim-entrance-input" aria-label="Upload Screenshot">
+        <div class="section-header">
+          <h2>1. Select Screenshot</h2>
+          <span class="badge-subtle">Phone, Camera, or Paste</span>
+        </div>
+
+        <!-- Upload Dropzone (Pressed Inset) -->
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload code screenshot">
+          <input type="file" id="fileInput" accept="image/*" class="file-input" aria-hidden="true">
+          
+          <div id="dropzoneEmpty" class="dropzone-empty">
+            <div class="upload-icon-neumorphic">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <p class="dropzone-primary-text">Tap to take photo or choose image</p>
+            <p class="dropzone-hint">Drag & drop or paste from clipboard (Ctrl+V)</p>
+          </div>
+
+          <!-- Image Preview Area -->
+          <div id="previewContainer" class="preview-container hidden">
+            <img id="imagePreview" alt="Screenshot preview" class="image-preview" draggable="false">
+            <button type="button" id="removeImageBtn" class="btn-icon-floating" title="Remove image" aria-label="Remove image">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode Selection -->
+        <div class="mode-section">
+          <label class="field-label">Extraction Mode</label>
+          <div class="segmented-control" role="radiogroup" aria-label="Extraction Mode">
+            <label class="segment-option">
+              <input type="radio" name="extractMode" value="exact" checked>
+              <div class="segment-pill">
+                <div class="segment-title-row">
+                  <span class="segment-dot"></span>
+                  <span class="segment-title">Exact copy</span>
+                </div>
+                <span class="segment-desc">Transcribe visible code only</span>
+              </div>
+            </label>
+            <label class="segment-option">
+              <input type="radio" name="extractMode" value="complete">
+              <div class="segment-pill">
+                <div class="segment-title-row">
+                  <span class="segment-dot"></span>
+                  <span class="segment-title">Complete missing</span>
+                </div>
+                <span class="segment-desc">Auto-finish cut-off parts</span>
+              </div>
+            </label>
+            <label class="segment-option">
+              <input type="radio" name="extractMode" value="fix">
+              <div class="segment-pill">
+                <div class="segment-title-row">
+                  <span class="segment-dot"></span>
+                  <span class="segment-title">Fix bugs</span>
+                </div>
+                <span class="segment-desc">Correct errors & typos</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Row -->
+        <div class="action-area">
+          <div class="action-row">
+            <button type="button" id="generateBtn" class="btn btn-primary" disabled>
+              <span class="btn-spinner hidden" aria-hidden="true"></span>
+              <span class="btn-label">Extract Code</span>
+              <span class="btn-shortcut">Ctrl+↵</span>
+            </button>
+            <button type="button" id="clearBtn" class="btn btn-neutral" title="Reset image and output">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              <span>Reset</span>
+            </button>
+          </div>
+          <!-- Quiet Usage Limit Note -->
+          <p id="quotaNote" class="quota-note hidden"></p>
+        </div>
+
+        <!-- Status & Slow Warning Banner -->
+        <div id="statusMessage" class="status-banner hidden" role="status" aria-live="polite"></div>
+        <div id="slowWarning" class="status-banner banner-warning hidden" role="status" aria-live="polite">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Waking up the server, the first request can take up to a minute.</span>
+        </div>
+      </section>
+
+      <!-- Output Column -->
+      <section class="card output-section anim-entrance-output" aria-label="Extracted Code Output">
+        <div class="section-header">
+          <div class="header-left">
+            <h2>2. Extracted Code</h2>
+            <span id="languageBadge" class="badge-pill">plaintext</span>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="output-toolbar">
+          <div class="toolbar-left">
+            <label class="neumorphic-switch-label">
+              <input type="checkbox" id="wrapToggle">
+              <div class="switch-track">
+                <div class="switch-thumb"></div>
+              </div>
+              <span class="switch-text">Wrap lines</span>
+            </label>
+          </div>
+          <div class="toolbar-right">
+            <button type="button" id="copyBtn" class="btn btn-toolbar" disabled>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span id="copyText">Copy</span>
+            </button>
+            <button type="button" id="downloadBtn" class="btn btn-toolbar" disabled>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- AI Notes Banner -->
+        <div id="aiNotesBanner" class="notes-banner hidden">
+          <div class="notes-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <div class="notes-body">
+            <strong id="notesTitle">AI Completion:</strong> <span id="aiNotesText"></span>
+          </div>
+        </div>
+
+        <!-- What was fixed Panel (Fix Mode) -->
+        <div id="bugsPanel" class="bugs-panel hidden">
+          <div class="bugs-panel-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+            <strong>What was fixed:</strong>
+          </div>
+          <ul id="bugsList" class="bugs-list"></ul>
+          <p class="bugs-disclaimer">Always test the fixed code before using it.</p>
+        </div>
+
+        <!-- Code Viewer (Pressed Inset Panel) -->
+        <div class="code-viewer-container">
+          <pre id="codePre" class="code-pre"><code id="codeBlock" class="code-block"><span class="code-placeholder">// Extracted code will appear here.
+// 1. Upload or paste a code screenshot on the left.
+// 2. Select Exact Copy or Complete Missing mode.
+// 3. Click "Extract Code" or press Ctrl+Enter.</span></code></pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Custom Neumorphic Orange Cursor (Desktop Pointer Only) -->
+  <div id="cursorDot" class="cursor-dot" aria-hidden="true"></div>
+  <div id="cursorRing" class="cursor-ring" aria-hidden="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
